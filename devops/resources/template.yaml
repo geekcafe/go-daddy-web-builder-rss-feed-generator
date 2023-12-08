@@ -1,0 +1,81 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Parameters:
+  CustomerName:
+    Type: String
+    Description: "Name of the customer for the website. Needs to be s3 naming friendly. Lower case no spaces etc"
+    Default: ""
+  DomainName:
+    Type: String
+    Description: "Custom domain name for the website"
+    Default: ""
+
+  AcmCertificateArn:
+    Type: String
+    Description: "ARN of the ACM SSL certificate for the custom domain.  Creating the cert is a bit manual.  See the resources readme.md"
+    Default: ""
+
+Resources:
+  CdnBucket:
+    Type: "AWS::S3::Bucket"
+    Properties:
+      BucketName: !Sub "${CustomerName}-cdn-bucket"
+
+  # origin identity
+  CloudFrontOriginIdentity:
+    Type: AWS::CloudFront::CloudFrontOriginAccessIdentity
+    Properties:
+      CloudFrontOriginAccessIdentityConfig:
+        Comment: 'origin identity'
+
+
+  
+  # create a bucket policy and allow the special user we created above
+  # yes the Principal Path is correct and includes CloudFront Origin Access Identity in it
+  CdnBucketPolicy:
+    Type: AWS::S3::BucketPolicy
+    Properties:
+      Bucket: !Ref CdnBucket
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              AWS: !Sub 'arn:aws:iam::cloudfront:user/CloudFront Origin Access Identity ${CloudFrontOriginIdentity}'
+            Action: 's3:GetObject'
+            Resource: !Sub 
+              - "${arn}/*"
+              - arn: !GetAtt CdnBucket.Arn
+  
+  CdnDistribution:
+    Type: AWS::CloudFront::Distribution
+    Properties:
+      DistributionConfig:
+        Origins:
+          - DomainName: !Sub "${CdnBucket}.s3.amazonaws.com"
+            Id: s3OriginAccess
+            S3OriginConfig:
+              OriginAccessIdentity: !Sub 'origin-access-identity/cloudfront/${CloudFrontOriginIdentity}'
+        Enabled: 'true'
+        Comment: !Sub "${DomainName} CDN Distribution"
+        DefaultCacheBehavior:
+          AllowedMethods:
+            - GET
+            - HEAD
+          TargetOriginId: s3OriginAccess
+          ForwardedValues:
+            QueryString: 'false'
+            Cookies:
+              Forward: none
+          ViewerProtocolPolicy: redirect-to-https
+        ViewerCertificate:
+          #CloudFrontDefaultCertificate: 'false'
+          AcmCertificateArn: !Ref AcmCertificateArn
+          MinimumProtocolVersion: TLSv1
+          SslSupportMethod: sni-only
+        Aliases:
+          - !Sub "${DomainName}"          
+        DefaultRootObject: "index.html"
+        CustomErrorResponses:
+          - ErrorCode: 404
+            ResponseCode: 200
+            ResponsePagePath: "/index.html"

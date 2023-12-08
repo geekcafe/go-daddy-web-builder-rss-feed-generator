@@ -1,0 +1,17 @@
+AWSTemplateFormatVersion: "2010-09-09"
+
+Parameters:
+  Environment:
+    Type: String
+    Description: "The applications pipeline environment"
+    Default: "dev"
+  
+  AppName:
+    Type: String
+    Description: The Application Name
+    
+Resources:
+  Artifacts:
+    Type: "AWS::S3::Bucket"
+    Properties:
+      BucketName: !Sub "${Environment}-${AppName}-pipeline-artifacts-bucket"
