@@ -28,7 +28,7 @@ def generate_rss_feed(title, link, description, items, author_name = None):
         )
 
     # Save the feed to an XML file
-    feed_path = "rss_feed.xml"
+    feed_path = "blog-rss-feed.xml"
     with open(feed_path, "w", encoding="utf-8") as feed_file:
         feed.write(feed_file, "utf-8")
 
