@@ -1,5 +1,6 @@
 import requests
 import json
+import os
 
 def read_json_from_webpage(url):
     try:
@@ -17,8 +18,8 @@ def read_json_from_webpage(url):
         return None
 
 if __name__ == "__main__":
-    # Replace 'your_webpage_url' with the actual URL of the web page containing JSON
-    webpage_url = 'your_webpage_url'
+    # load a blog feed url from an environment var
+    webpage_url = os.getenv("BLOG_FEED_URL")
 
     # Read JSON content from the web page
     json_data = read_json_from_webpage(webpage_url)
