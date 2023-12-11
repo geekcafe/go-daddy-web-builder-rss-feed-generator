@@ -1,0 +1,73 @@
+
+
+Transform: AWS::Serverless-2016-10-31
+
+Parameters:
+  AppName:
+    Type: String
+    Description: The Name of the application for our infrastructor
+        
+  Environment:
+    Type: String
+  
+  CronExpression:
+    Type: String
+    Default: "cron(0 9 * * ? *)"
+
+  TimeZone:
+    Type: String
+    Default: "America/New_York"
+
+  LambdaFunctionToExecuteName:
+    Type: String
+  
+  LambdaFunctionToExecuteArn:
+    Type: String
+
+  Payload: 
+    Type: String
+    Default: "{ }"
+
+
+Resources:
+  EventBridgeScheduler:
+    Type: AWS::Scheduler::Schedule
+    Properties:
+      Description: !Sub "Trigger Lambda ${LambdaFunctionToExecuteName}"
+      #Name: omit name for auto generation    
+      FlexibleTimeWindow:
+        Mode: FLEXIBLE
+        MaximumWindowInMinutes: 1
+      ScheduleExpressionTimezone: !Sub ${TimeZone}
+      ScheduleExpression: !Sub "${CronExpression}"
+      State: "ENABLED"
+      Target:
+        Arn: !Ref LambdaFunctionToExecuteArn
+          
+        RoleArn: !GetAtt SchedulerRole.Arn
+        Input:  !Ref Payload
+
+  
+  SchedulerRole:
+    Type: AWS::IAM::Role
+    Properties:
+      Description: "Scheduler Role for Lambda Execution"
+      #RoleName: omit name for auto generation
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - scheduler.amazonaws.com
+            Action:
+              - sts:AssumeRole
+      Policies:
+        - PolicyName: "invoke-lambda-permissions"
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Action: "lambda:InvokeFunction"
+                Resource:
+                  - !Ref LambdaFunctionToExecuteArn

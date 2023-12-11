@@ -160,3 +160,7 @@ cython_debug/
 #.idea/
 
 .vdev
+.aws-sam
+blog-rss-feed.xml
+
+blog_rss_feed.xml

@@ -1,0 +1,33 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Transform: AWS::Serverless-2016-10-31
+
+Parameters:
+  
+  LambdaFunctionName:
+    Type: String
+    Description: The Name of the lambda function to monitor
+        
+  SNSTopic:
+    Type: String
+    Description: The SNS Topic to notify when the alarm is triggered    
+
+Resources:
+
+  LambdaFunctionFailureAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      #AlarmName: "${LambdaFunctionName}-Failure-Alarm"
+      AlarmDescription: 'Alarm for Lambda function failures'
+      Namespace: AWS/Lambda
+      MetricName: Errors
+      Dimensions:
+        - Name: FunctionName
+          Value: !Ref LambdaFunctionName
+      Statistic: Sum
+      Period: 60 # 1 minute
+      EvaluationPeriods: 1
+      Threshold: 1
+      ComparisonOperator: GreaterThanOrEqualToThreshold
+      AlarmActions:
+        - !Ref SNSTopic
+      TreatMissingData: "notBreaching"

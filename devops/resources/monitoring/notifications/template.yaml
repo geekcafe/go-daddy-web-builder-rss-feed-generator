@@ -1,0 +1,24 @@
+Transform: AWS::Serverless-2016-10-31
+
+Parameters:
+  AppName:
+    Type: String
+    Description: The Name of the application for our infrastructor
+        
+  Environment:
+    Type: String
+  
+  TopicName:
+    Type: String
+
+Resources:
+  SNSTopic:
+    Type: AWS::SNS::Topic
+    Properties:
+      DisplayName: !Sub "${Environment} ${AppName} ${TopicName}"       
+
+
+Outputs:
+  SNSTopArn:
+    Value: !Ref SNSTopic
+    Description: "The SNS Topic Arn"
