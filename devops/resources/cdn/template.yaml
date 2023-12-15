@@ -87,7 +87,7 @@ Resources:
           - !Sub "${Environment}-${CdnDomainName}"
           - !If
             - IsProdEnvironment
-            - - !Sub "${CdnDomainName}"
+            - !Sub "${CdnDomainName}"
             - !Ref "AWS::NoValue"         
         DefaultRootObject: "index.html"
         CustomErrorResponses:
