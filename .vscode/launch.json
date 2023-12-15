@@ -16,9 +16,30 @@
             "name": "Python: Generate Feed",
             "type": "python",
             "request": "launch",
-            "program": "${workspaceFolder}/src/rss_generator/app.py",
+            "program": "${workspaceFolder}/src/common/rss_feed_builder.py",
             "console": "integratedTerminal",
-            "justMyCode": true
+            "justMyCode": true,
+            "env": {
+                "PYTHONPATH": "${workspaceFolder}/src:${workspaceFolder}/src/common:${workspaceFolder}/src/lambda_handlers:",
+            }
+        },
+        {
+            "name": "Python: Deploy Dev",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}/devops/resources/deploy.py",
+            "console": "integratedTerminal",
+            "justMyCode": true,
+            "envFile": "${workspaceFolder}/.vscode/.env/dev/.env"
+        },
+        {
+            "name": "Python: Deploy Prod",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}/devops/resources/deploy.py",
+            "console": "integratedTerminal",
+            "justMyCode": true,
+            "envFile": "${workspaceFolder}/.vscode/.env/prod/.env"
         }
     ]
 }
