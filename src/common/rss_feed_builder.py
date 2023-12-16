@@ -25,11 +25,11 @@ def build_rss_feed(url: str, author: str, title: str, site_url: str, description
 if __name__ == "__main__":
     # usage
     import os
-    url = os.getenv("BLOG_FEED_URL")
-    author = os.getenv("BLOG_FEED_AUTHOR")
-    title = os.getenv("SITE_TITLE")
-    site_url = os.getenv("SITE_URL")
-    description = os.getenv("SITE_DESCRIPTION")
-    bucket = os.getenv("FEED_S3_BUCKET_NAME")
-    cdn_domain = os.getenv("DOMAIN_NAME")
-    build_rss_feed(url, author, title, site_url, description, bucket, cdn_domain)
+    _url = os.getenv("BLOG_FEED_URL")
+    _author = os.getenv("BLOG_FEED_AUTHOR")
+    _title = os.getenv("SITE_TITLE")
+    _site_url = os.getenv("SITE_URL")
+    _description = os.getenv("SITE_DESCRIPTION")
+    _bucket = os.getenv("FEED_S3_BUCKET_NAME")
+    _cdn_domain = os.getenv("DOMAIN_NAME")
+    build_rss_feed(_url, _author, _title, _site_url, _description, _bucket, _cdn_domain)

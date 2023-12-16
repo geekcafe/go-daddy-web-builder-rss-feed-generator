@@ -64,7 +64,7 @@ def generate_rss_feed(title: str, link: str, description: str, items, author_nam
             description=content,
             pubdate=date,
             unique_id=item["postId"],
-            author_name=author_name,            
+            author_name=author_name,
             content=content,
             enclosure=enclosure
         )

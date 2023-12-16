@@ -32,7 +32,6 @@ def check_variables(env_vars: list):
         if os.getenv(var) is None:
             missing.append(var)
             print(f"Error: Environment Variable [{var}] is not set.")
-    
 
     if len(missing) > 0:
         sys.exit(1)
@@ -152,7 +151,8 @@ def sam_deploy():
         "--no-fail-on-empty-changeset",
         "--no-confirm-changeset",
         "--s3-bucket", deployment_aws_sam_s3_bucket_name,
-        "--s3-prefix", f"pipeline/{environment}/{application_name}/{deployment_aws_account_id}/{deployment_aws_region}",        
+        "--s3-prefix", f"pipeline/{environment}/{application_name}/" \
+            f"{deployment_aws_account_id}/{deployment_aws_region}",        
         "--parameter-overrides",
         f"ParameterKey=AppName,ParameterValue={application_name}",
         f"ParameterKey=Environment,ParameterValue={environment}",
@@ -162,7 +162,7 @@ def sam_deploy():
     ]
 
     if deployment_aws_profile:
-        # we need a conainer to build it so that it gets the correct dependancies        
+        # we need a conainer to build it so that it gets the correct dependancies
         run_commands.append("--profile")
         run_commands.append(deployment_aws_profile)
 

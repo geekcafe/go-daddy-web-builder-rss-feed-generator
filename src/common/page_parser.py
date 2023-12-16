@@ -6,6 +6,9 @@ import requests
 from bs4 import BeautifulSoup
 
 class SiteBuilderPageParser:
+    """
+    Site Builder Page Parser: Parses a web page created by GoDaddy WebSite Builder
+    """
     @staticmethod
     def extract_json_from_webpage(url):
         """
@@ -27,7 +30,7 @@ class SiteBuilderPageParser:
                 script_content = script_tag.text
                 start_index = script_content.find('{')
                 end_index = script_content.rfind('}')
-                
+
                 if start_index != -1 and end_index != -1:
                     json_data_str = script_content[start_index:end_index + 1]
 
@@ -54,14 +57,10 @@ class SiteBuilderPageParser:
         temp_content = None
         if "post" in json_data and "fullContent" in json_data["post"]:
             temp_content = json_data["post"]["fullContent"]
-       
+
         if isinstance(temp_content, str):
             content = json.loads(temp_content)
         else:
             content = temp_content
 
         return content
-
-    
-
-

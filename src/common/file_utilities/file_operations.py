@@ -32,7 +32,7 @@ class FileOperations:
                             shutil.rmtree(path)
                         elif os.path.isfile(path):
                             os.remove(path)
-                    
+
                     except Exception as e:
                         print(f'clean up error {str(e)}')
 
@@ -46,7 +46,7 @@ class FileOperations:
 
         if tail:
             return tail
-        
+
         return head
 
 
@@ -66,12 +66,14 @@ class FileOperations:
 
         with open(file_path, 'w') as file:
             file.write(output)
-            
+
         return file_path
-    
-    @staticmethod    
+
+    @staticmethod
     def gzip_file(input_file, output_file = None):
-       
+        """
+        GZip a file
+        """
         output_file = f'{input_file}.gz'
         with open(input_file, 'rb') as f_in:
             with gzip.open(output_file, 'wb') as f_out:

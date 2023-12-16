@@ -16,24 +16,28 @@ tracer = Tracer()
 s3_session = S3Session()
 
 
-    
-class S3Utility:
 
+class S3Utility:
+    """
+    S3 Utility
+    """
     @staticmethod
     @tracer.capture_method
     def download_file(bucket, key, local_directory = None, always_download = False):
-
+        """
+        Download a file from S3
+        """
         s3_client: boto3.client = s3_session.get_s3_client()
         file_name = S3Utility.get_file_name_from_path(key)
         if local_directory is None:
             local_path = S3Utility.get_local_path_for_file(file_name)
         else:
             local_path = os.path.join(local_directory, file_name)
-        
+
 
         if not always_download and os.path.exists(local_path):
             return 200, {'path': local_path}
-        
+
 
         logger.debug({
             'source': 'download_file',
@@ -44,8 +48,6 @@ class S3Utility:
             'local_path': local_path
         })
 
-        
-        
         response = None
         error = None
         try:
@@ -62,7 +64,7 @@ class S3Utility:
             message = {'metric_filter': 's3_download_error', 'error': str(e)}
             logger.error(message)
             return 500, message
-        
+
         finally:
             file_exists = os.path.exists(local_path)
             logger.debug({
@@ -90,18 +92,29 @@ class S3Utility:
 
 
         return 200, {'path': local_path}
-    
+
 
     @staticmethod
     @tracer.capture_method
-    def upload_file_to_s3(bucket: str, key: str, local_file_path: str):
+    def upload_file_to_s3(bucket: str, key: str, local_file_path: str, content_type: str = None):
+        """
+        Upload a file to S3
+        """
         # upload file to s3 bucket
         s3_client: boto3.client = s3_session.get_s3_client()
-        
+
         try:
-            
-            logger.info({'action': 's3_upload', 'file': local_file_path, 's3_bucket': bucket, 's3_key': key }) 
-            response = s3_client.upload_file(local_file_path, bucket, key)
+            extra_args = {
+
+            }
+
+            if content_type:
+                extra_args = {
+                    'ContentType': content_type
+                }
+
+            logger.info({'action': 's3_upload', 'file': local_file_path, 's3_bucket': bucket, 's3_key': key })
+            response = s3_client.upload_file(local_file_path, bucket, key, ExtraArgs=extra_args)
             logger.info({'action': 's3_upload', 'response': response })
 
         except ClientError as e:
@@ -109,22 +122,30 @@ class S3Utility:
                           'key':key, 'local_file_path': local_file_path,
                           'error': str(e)
                         })
-            
+
             raise e
-            
-        
+
+
         s3_path = f"s3://{bucket}/{key}"
         return s3_path
 
     @staticmethod
     @tracer.capture_method
     def get_local_path_for_file(file_name: str):
+        """
+        Get a local path for a file.  /tmp is the only directy we can write to 
+        in a Lambda function.  However in other environments, it may be something else.
+        Use this function to define where files are written to based on the environment.
+        """
         # use /tmp it's the only writeable location for lambda
         local_path = os.path.join("/tmp", file_name)
         return local_path
-    
+
 
     @staticmethod
     @tracer.capture_method
     def get_file_name_from_path(path: str):
+        """
+        Get a file name from the entire path
+        """
         return path.rsplit('/')[-1]
