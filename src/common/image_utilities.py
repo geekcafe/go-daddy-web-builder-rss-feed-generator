@@ -38,7 +38,7 @@ class ImageUtilities:
 
         except Exception as e:
             print(f"Error: {e}")
-                
+
         return success
 
     @staticmethod
@@ -74,12 +74,13 @@ class ImageUtilities:
 
             # Get image length and type
             image_length = len(image_content)
-            image_type = image.format.lower() if image.format else None
+            image_type = image.format.lower() if image.format else "jpeg"
 
             # determine if we need to save the image and store it
             # on our CDN server.
             # todo: pass this in as flag
             feature_on = True
+            override_image = True
             if feature_on and not ImageUtilities.has_extension(url):
                 try:
                     # save it
@@ -88,13 +89,14 @@ class ImageUtilities:
 
                     if cdn_domain:
                         tmp_url = f"https://{cdn_domain}/{key}"
-                        if not ImageUtilities.image_exist(tmp_url):
+                        if not ImageUtilities.image_exist(tmp_url) or override_image:
                             print(f'saving image to {tmp_url}')
                             path = '/tmp/images'
                             FileOperations.makedirs(path)
                             path = f'{path}/{file_name}'
                             image.save(path)
-                            S3Utility.upload_file_to_s3(feed_s3_bucket, key, path)
+
+                            S3Utility.upload_file_to_s3(feed_s3_bucket, key, path, f"image/{image_type}")
 
                         url = tmp_url
                     else:
@@ -110,7 +112,7 @@ class ImageUtilities:
             print(f"Error: {e}")
 
         return url, None, None
-    
+
     @staticmethod
     def has_extension(url):
         """

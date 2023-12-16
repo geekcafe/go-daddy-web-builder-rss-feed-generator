@@ -10,12 +10,15 @@ tracer = Tracer()
 
 @tracer.capture_lambda_handler(capture_response=True)
 def lambda_handler(event: dict, context):
-    
+    """
+    lambda_handler
+    """
+
     logger.info(event)
 
     if "body" in event:
         data = event["body"]
-        if type(data) is str:
+        if isinstance(data, str):
             data = json.loads(data)
     else:
         data = event
@@ -28,11 +31,11 @@ def lambda_handler(event: dict, context):
 
     feed_s3_bucket = get_configuration_value("feed_s3_bucket_name", data)
     feed_s3_object_key = get_configuration_value("feed_s3_object_key", data, "blog-rss-feed.xml")
+    cdn_domain = get_configuration_value("cdn_domain", data)
 
+    output_path = build_rss_feed(url, author, title, site_url, description, feed_s3_bucket, cdn_domain)
 
-    output_path = build_rss_feed(url, author, title, site_url, description)
-
-    S3Utility.upload_file_to_s3(feed_s3_bucket, feed_s3_object_key, output_path)
+    S3Utility.upload_file_to_s3(feed_s3_bucket, feed_s3_object_key, output_path, "text/xml")
 
     response = {
         'statusCode': 200,
