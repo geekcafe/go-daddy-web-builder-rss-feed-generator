@@ -21,7 +21,8 @@
             "justMyCode": true,
             "env": {
                 "PYTHONPATH": "${workspaceFolder}/src:${workspaceFolder}/src/common:${workspaceFolder}/src/lambda_handlers:",
-            }
+            },
+            "envFile": "${workspaceFolder}/.vscode/.env/dev/.env"
         },
         {
             "name": "Python: Deploy Dev",
