@@ -22,14 +22,27 @@ This innovative approach not only addresses the immediate challenge but also pro
 ## 🏛️ Architecture
 
 ### 🐍 Python Code
-Python Code for "scraping" the feed.  This techincally isn't scraping since I'm reading an endpoint that has blog meta-data.
+Python Code for "scraping" the feed.  First we need to get a list of the blogs.
 
-To find your blog endpoint. Use an inspection tool like Google Chome Dev Tools.  Find url like
+To find your blog endpoint. Go to your blog page created by the Site Builder platform.  Use an inspection tool like Google Chome Dev Tools.  Find the url that contains the `?feed?pageItems=` in it.
+
+The full url should look something like this
 `https://blog.apps.secureserver.net/v1/website/<some-uuid>/feed?pageItems=1000`
+
+The `<some-uuid>` is a unique site id that is assigned to you and will be different for each site you publish to.
 
 You can request any number of items to be loaded.  For this round, I'm lazy and I'm requesting 1000 for a site that I know last less than that.  A future version will read it until there aren't any more results.
 
 The `app.py` orchestrates the feed build.
+
+This will get a list of your blogs along with a lot of meta data.  However the `content` section seems to be limited to the first page `block` and not the entire blog.
+
+If you don't need all the content then you're good to go.  However if you need the actual blog content in your feed you will need to scrape the blog page for it.
+
+> NOTE: At this time, I haven't found an api endpoint to get all of the content.  It seems like one should exists but I haven't found it yet.
+
+Luckly your blog will have all of it's content loaded into a JSON object into a specific JavaScript variable, and you can target that JSON object to build out the page.
+
 
 
 
@@ -48,3 +61,30 @@ I'll get that working this weekend (mostlikely)
 ### 💰 Cost 
 TBD.  I'll update this in a month or so to see the cost but I expect it to be pennies per month.
 
+
+
+# Setup
+
+1. Clone this repo
+1. (Optional): Create a local virtual environment
+1. Install the required packages
+1. Run tests
+1. Experiment with your site.
+
+
+## Create a local virtual enviornment
+
+```sh
+python3 -m venv .vdev
+source ./.vdev/bin/activate
+
+pip install -r ./src/requirements.txt
+```
+
+# Running it
+
+Run it locallay for testing.
+
+
+# Deploying it
+If you want to run this on a regular basis in the cloud (in AWS), you can use the template(s) found in the `./devops/resources` directory.
