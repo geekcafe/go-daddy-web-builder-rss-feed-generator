@@ -1,17 +1,19 @@
-import requests
-import os
-from bs4 import BeautifulSoup
+"""
+Page Parser
+"""
 import json
-from PIL import Image
-from io import BytesIO
-from .html_creator import HtmlCreator
+import requests
+from bs4 import BeautifulSoup
 
 class SiteBuilderPageParser:
     @staticmethod
     def extract_json_from_webpage(url):
+        """
+        Extract json from a web page
+        """
         try:
             # Make an HTTP request to the URL
-            response = requests.get(url)
+            response = requests.get(url, timeout=15)
             response.raise_for_status()  # Raise an HTTPError for bad responses
 
             # Parse the HTML content using BeautifulSoup
@@ -45,55 +47,21 @@ class SiteBuilderPageParser:
 
     @staticmethod
     def get_page_content(json_data):
+        """
+        Get Page Content from json data
+        """
         content = None
         temp_content = None
         if "post" in json_data and "fullContent" in json_data["post"]:
             temp_content = json_data["post"]["fullContent"]
-
-
        
-        if type(temp_content) is str:
+        if isinstance(temp_content, str):
             content = json.loads(temp_content)
         else:
             content = temp_content
 
         return content
 
-    @staticmethod
-    def get_image_info(url):
-        try:
-            # Make an HTTP request to the image URL
-            response = requests.get(url)
-            response.raise_for_status()  # Raise an HTTPError for bad responses
+    
 
-            # Get image content
-            image_content = response.content
 
-            # Open the image using PIL
-            image = Image.open(BytesIO(image_content))
-
-            # Get image length and type
-            image_length = len(image_content)
-            image_type = image.format.lower() if image.format else None
-
-            return image_length, image_type
-
-        except requests.exceptions.RequestException as e:
-            print(f"Error: {e}")
-
-        return None, None
-
-if __name__ == "__main__":
-    # Replace 'your_webpage_url' with the actual URL of the web page
-    webpage_url = os.getenv("SITE_TEST_BLOG_POST")
-
-    # Extract JSON data from the web page
-    json_data = SiteBuilderPageParser.extract_json_from_webpage(webpage_url)
-    content_data = SiteBuilderPageParser.get_page_content(json_data)
-    content = HtmlCreator.create_html_from_json_content(content_data)
-    if content_data:
-        # Process and use the JSON data as needed
-        print("JSON Data:")
-        print(json.dumps(content_data, indent=2))  # Pretty print the JSON data
-    else:
-        print("Failed to fetch or extract JSON from the web page.")

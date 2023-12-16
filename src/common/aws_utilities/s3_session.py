@@ -1,7 +1,10 @@
+
+from datetime import datetime
 from aws_lambda_powertools import Tracer
 from aws_lambda_powertools import Logger
+
 import boto3
-from datetime import datetime
+
 from common.aws_utilities.boto3_session import Boto3_Session
 from common.environment_utility import EnvironmentUtility
 

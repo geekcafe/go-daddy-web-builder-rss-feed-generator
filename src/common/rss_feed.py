@@ -2,6 +2,7 @@ import feedgenerator
 from datetime import datetime
 from .html_creator import HtmlCreator
 from .page_parser import SiteBuilderPageParser
+from .image_utilities import ImageUtilities
 from .file_utilities.file_operations import FileOperations
 from aws_lambda_powertools import Tracer, Logger
 logger = Logger()
@@ -9,17 +10,18 @@ tracer = Tracer()
 
 # Function to generate the RSS feed
 @tracer.capture_method()
-def generate_rss_feed(title, link, description, items, author_name = None
-                      , include_full_content = True, output="/tmp/feeds/blog-rss-feed.xml"):
-    
-    
-    
+def generate_rss_feed(title: str, link: str, description: str, items, author_name: str = None
+                      , include_full_content: bool = True, output: str="/tmp/feeds/blog-rss-feed.xml",
+                      s3_bucket: str = None, cdn_domain: str = None):
+    """
+    Generate the RSS Feed
+    """
     file_name = FileOperations.get_file_from_path(output)
     directory = output.replace(file_name, "")
     # Ensure the directory exists, create it if not
     FileOperations.makedirs(directory)
     FileOperations.clean_directory(directory)
-    
+
     # Create a FeedGenerator object
     feed: feedgenerator.Rss201rev2Feed = feedgenerator.Rss201rev2Feed(
         title=f"{title}",
@@ -54,7 +56,7 @@ def generate_rss_feed(title, link, description, items, author_name = None
         
         #content = f"<![CDATA[ {content} ]]>"
         image_url = item["featuredImage"]
-        image_length, image_type = SiteBuilderPageParser.get_image_info(image_url)
+        image_url, image_length, image_type = ImageUtilities.get_image_info(image_url, s3_bucket, cdn_domain)
         enclosure: feedgenerator.Enclosure = feedgenerator.Enclosure(image_url, str(image_length), image_type)
         feed.add_item(
             title=item["title"],
@@ -77,5 +79,4 @@ def generate_rss_feed(title, link, description, items, author_name = None
 
     return output
 
-if __name__ == "__main__":
-    generate_rss_feed()
+

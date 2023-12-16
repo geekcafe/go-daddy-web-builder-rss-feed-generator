@@ -1,8 +1,16 @@
-
-
+"""
+Html Creater
+"""
 class HtmlCreator:
+    """
+    HtmlCreator Class
+    """
+
     @staticmethod
     def create_html_from_json_content(json_data):
+        """
+        Creates html from json content string
+        """
         html_blocks = []
         if "blocks" in json_data:
             blocks = json_data["blocks"]
@@ -17,17 +25,25 @@ class HtmlCreator:
 
         return "\n".join(html_blocks)
     
-    def get_content_from_block(block):
-        text = block["text"]
+    @staticmethod
+    def get_content_from_block(block: dict):
+        """
+        Gets content / value from a block
+        """
+        text = block.get("text")
         html = None
         if text:
-            style = HtmlCreator.get_sytle_from_block(block)
+            style = HtmlCreator.get_style_from_block(block)
             html = f"<p><span style=\"{style}\">{text}</span></p>"
             
 
         return html
 
-    def get_sytle_from_block(block):
+    @staticmethod
+    def get_style_from_block(block: dict):
+        """
+        Gets the style information from a block
+        """
         styles = []
 
         if "inlineStyleRanges" in block:

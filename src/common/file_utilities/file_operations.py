@@ -1,15 +1,26 @@
-import os, shutil
+"""
+File Utilities
+"""
+import os
+import shutil
 import gzip
 class FileOperations:
-
+    """
+    FileOperations
+    """
     @staticmethod
     def makedirs(path):
+        """
+        makedirs
+        """
         abs_path = os.path.abspath(path)
         os.makedirs(abs_path, exist_ok=True)
 
     @staticmethod
     def clean_directory(path):
-
+        """
+        clean directory
+        """
         abs_path = os.path.abspath(path)
         if os.path.exists(abs_path):
             items = os.listdir(abs_path)
@@ -28,6 +39,9 @@ class FileOperations:
 
     @staticmethod
     def get_file_from_path(path: str):
+        """
+        Get filename from path
+        """
         head, tail = os.path.split(path)
 
         if tail:

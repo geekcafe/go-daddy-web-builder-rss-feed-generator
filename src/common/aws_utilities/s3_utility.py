@@ -1,12 +1,15 @@
-
-import boto3
+"""
+s3 utilities
+"""
 import os
-from datetime import datetime
+import boto3
 from aws_lambda_powertools import Tracer
 from aws_lambda_powertools import Logger
-from common.aws_utilities.s3_session import S3Session
 from botocore.exceptions import ClientError
+
 from common.file_utilities.file_operations import FileOperations
+from common.aws_utilities.s3_session import S3Session
+
 logger = Logger(service=__name__)
 tracer = Tracer()
 
